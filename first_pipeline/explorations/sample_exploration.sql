@@ -16,8 +16,11 @@
 -- COMMAND ----------
 
 -- !!! Before performing any data analysis, make sure to run the pipeline to materialize the sample datasets. The tables referenced in this notebook depend on that step.
-
 USE CATALOG `workspace`;
+
 USE SCHEMA `default`;
 
-SELECT * from sample_trips_first_pipeline;
+SELECT
+  *
+from
+  sample_trips_first_pipeline;
