@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce Lead Processing Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .architecture {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .layer {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+        }
+
+        .layer-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .layer-content {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .component {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            flex: 1;
+            min-width: 200px;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .component:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+
+        .component-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .component-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .component-desc {
+            color: #7f8c8d;
+            font-size: 13px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .component-tech {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 11px;
+            color: #95a5a6;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .arrow {
+            width: 100%;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .arrow::before {
+            content: '';
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            position: absolute;
+        }
+
+        .arrow::after {
+            content: '▼';
+            color: #764ba2;
+            font-size: 24px;
+            position: absolute;
+            bottom: -5px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+
+        .tech-stack {
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+        }
+
+        .tech-stack h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .tech-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .tech-item-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .tech-item-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-text {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .streaming {
+            border-color: #3498db;
+            background: linear-gradient(135deg, #ebf4ff 0%, #d6e9ff 100%);
+        }
+
+        .analysis {
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, #ffe8e6 0%, #ffd4d0 100%);
+        }
+
+        .storage {
+            border-color: #f39c12;
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+        }
+
+        .visualization {
+            border-color: #9b59b6;
+            background: linear-gradient(135deg, #f3e8ff 0%, #e6d0ff 100%);
+        }
+
+        @media (max-width: 768px) {
+            .layer {
+                flex-direction: column;
+            }
+
+            .layer-label {
+                writing-mode: horizontal-tb;
+                width: 100%;
+                min-height: auto;
+            }
+
+            .layer-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Salesforce Lead Processing Pipeline Architecture</h1>
+        <p class="subtitle">Hourly ingestion pipeline & Markov Chain Analysis</p>
+
+        <div class="architecture">
+            <!-- Layer 1: Data Source -->
+            <div class="layer">
+                <div class="layer-label">DATA SOURCE</div>
+                <div class="layer-content">
+                    <div class="component">
+                        <div class="component-icon">☁️</div>
+                        <div class="component-title">Salesforce CRM</div>
+                        <div class="component-desc">Lead and LeadHistory objects with change data capture</div>
+                        <div class="component-tech">REST API / OAuth 2.0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Layer 2: Ingestion -->
+            <div class="layer">
+                <div class="layer-label">INGESTION</div>
+                <div class="layer-content">
+                    <div class="component streaming">
+                        <div class="component-icon">📥</div>
+                        <div class="component-title">Databricks Connector</div>
+                        <div class="component-desc">Continuous streaming ingestion from Salesforce API</div>
+                        <div class="component-tech">Spark Structured Streaming</div>
+                    </div>
+                    <div class="component streaming">
+                        <div class="component-icon">⚡</div>
+                        <div class="component-title">Change Data Capture</div>
+                        <div class="component-desc">Detection of lead status changes</div>
+                        <div class="component-tech">Salesforce CDC</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Layer 3: Processing -->
+            <div class="layer">
+                <div class="layer-label">PROCESSING</div>
+                <div class="layer-content">
+                    <div class="component streaming">
+                        <div class="component-icon">🔄</div>
+                        <div class="component-title">Delta Live Tables</div>
+                        <div class="component-desc">Declarative streaming tables with automatic dependency management</div>
+                        <div class="component-tech">DLT Continuous Mode</div>
+                    </div>
+                    <div class="component streaming">
+                        <div class="component-icon">⏱️</div>
+                        <div class="component-title">Window Aggregations</div>
+                        <div class="component-desc">1-hour tumbling windows for lead metrics</div>
+                        <div class="component-tech">Spark SQL Window Functions</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Layer 4: Storage -->
+            <div class="layer">
+                <div class="layer-label">STORAGE</div>
+                <div class="layer-content">
+                    <div class="component storage">
+                        <div class="component-icon">🗄️</div>
+                        <div class="component-title">Delta Lake Tables</div>
+                        <div class="component-desc">ACID transactions, time travel, and schema evolution</div>
+                        <div class="component-tech">Delta Lake 2.0+</div>
+                    </div>
+                    <div class="component storage">
+                        <div class="component-icon">📊</div>
+                        <div class="component-title">Unity Catalog</div>
+                        <div class="component-desc">Centralized governance and access control</div>
+                        <div class="component-tech">workspace.salesforce</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Layer 5: Analysis -->
+            <div class="layer">
+                <div class="layer-label">ANALYSIS</div>
+                <div class="layer-content">
+                    <div class="component analysis">
+                        <div class="component-icon">🔬</div>
+                        <div class="component-title">Markov Chain Model</div>
+                        <div class="component-desc">Probabilistic analysis of lead status transitions</div>
+                        <div class="component-tech">PySpark + Pandas</div>
+                    </div>
+                    <div class="component analysis">
+                        <div class="component-icon">🧮</div>
+                        <div class="component-title">Probability Matrix</div>
+                        <div class="component-desc">Transition likelihood calculations between all status pairs</div>
+                        <div class="component-tech">NumPy / Statistics</div>
+                    </div>
+                    <div class="component analysis">
+                        <div class="component-icon">📈</div>
+                        <div class="component-title">Aggregation Engine</div>
+                        <div class="component-desc">Lead counts by status with conversion tracking</div>
+                        <div class="component-tech">Spark SQL</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Layer 6: Visualization -->
+            <div class="layer">
+                <div class="layer-label">VISUALIZATION</div>
+                <div class="layer-content">
+                    <div class="component visualization">
+                        <div class="component-icon">🎨</div>
+                        <div class="component-title">Heatmap Generation</div>
+                        <div class="component-desc">Visual transition probability matrix</div>
+                        <div class="component-tech">Matplotlib + Seaborn</div>
+                    </div>
+                    <div class="component visualization">
+                        <div class="component-icon">📱</div>
+                        <div class="component-title">Near Real-Time Dashboards</div>
+                        <div class="component-desc">Interactive visualizations with auto-refresh</div>
+                        <div class="component-tech">Databricks SQL</div>
+                    </div>
+                    <div class="component visualization">
+                        <div class="component-icon">📉</div>
+                        <div class="component-title">Business Insights</div>
+                        <div class="component-desc">KPIs, conversion rates, and funnel analysis</div>
+                        <div class="component-tech">SQL Analytics</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="tech-stack">
+            <h2>💻 Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-item-icon">🏗️</div>
+                    <div class="tech-item-name">Databricks</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">⚡</div>
+                    <div class="tech-item-name">Apache Spark</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🔺</div>
+                    <div class="tech-item-name">Delta Lake</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🐍</div>
+                    <div class="tech-item-name">PySpark</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🗃️</div>
+                    <div class="tech-item-name">Unity Catalog</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">📊</div>
+                    <div class="tech-item-name">Pandas</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">📈</div>
+                    <div class="tech-item-name">Matplotlib</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🎨</div>
+                    <div class="tech-item-name">Seaborn</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">☁️</div>
+                    <div class="tech-item-name">Salesforce API</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🔍</div>
+                    <div class="tech-item-name">SQL Analytics</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🔐</div>
+                    <div class="tech-item-name">OAuth 2.0</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-item-icon">🌊</div>
+                    <div class="tech-item-name">Structured Streaming</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box streaming"></div>
+                <div class="legend-text">Ingestion</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box analysis"></div>
+                <div class="legend-text">Analysis & ML</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box storage"></div>
+                <div class="legend-text">Data Storage</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box visualization"></div>
+                <div class="legend-text">Visualization</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

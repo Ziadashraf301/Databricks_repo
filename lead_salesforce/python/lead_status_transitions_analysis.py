@@ -88,6 +88,6 @@ plt.tight_layout()
 output_path = os.path.join(os.getcwd(), "lead_status_transition_heatmap.png")
 plt.savefig(output_path, dpi=300, bbox_inches='tight')
 
-# ---- Optional Step 11: Print Save Confirmation ----
+# ---- tep 10: Print Save Confirmation ----
 print(f"✅ Transition probability table saved as 'workspace.salesforce.lead_status_transition_probs'")
 print(f"✅ Heatmap image saved to: {output_path}")
