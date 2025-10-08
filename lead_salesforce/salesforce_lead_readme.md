@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-This project implements an **hourly ingestion pipeline** for processing and analyzing Salesforce leads using **Databricks Delta Live Tables (DLT)**. The solution enables **automated lead tracking**, **status transition analysis** with **Markov Chain modeling**, and **actionable insights** via interactive dashboards. The pipeline leverages **Apache Spark**, **Delta Lake**, and **Git-based CI/CD** for reliability and reproducibility.
+This project implements an **hourly ingestion pipeline** for processing and analyzing Salesforce leads using **Databricks Delta Live Tables (DLT)**. The solution enables **automated lead tracking**, **status transition analysis** with **Markov Chain modeling**, and **actionable insights** via interactive dashboard. The pipeline leverages **Apache Spark**, **Delta Lake**, and **Git-based CI/CD** for reliability and reproducibility.
 
 ---
 
@@ -38,14 +38,22 @@ This project implements an **hourly ingestion pipeline** for processing and anal
 
 ## 🛠️ Technologies Used
 
-* **Databricks Delta Live Tables (DLT)** — Managed data ingestion and transformation
-* **Apache Spark Structured Streaming** — Micro-batch processing (hourly windows)
-* **Delta Lake** — Reliable, ACID-compliant data storage
-* **Salesforce API** — Source system for lead and history data
-* **PySpark** — Data transformation and Markov Chain analysis
-* **Pandas & Matplotlib** — Probability matrix creation and visualization
+Yes ✅ — it needs a **small but important update** to reflect that the ingestion is now **hourly batch ingestion**, **not real-time streaming**.
+
+Here’s the **corrected and precise version** 👇
+
+---
+
+### 🛠️ Technologies Used
+
+* **Databricks Delta Live Tables (DLT)** — Managed, declarative data ingestion and transformation
+* **Databricks Ingestion API (Salesforce connector)** — Automated extraction of `Lead` and `LeadHistory` via REST API
+* **Apache Spark** — Distributed data processing and transformation
+* **Delta Lake** — Reliable, ACID-compliant data storage for ingested data
+* **PySpark** — Transformation logic and Markov Chain transition analysis
+* **Pandas & Matplotlib** — Probability matrix construction and visualization
 * **Seaborn** — Transition heatmap visualization
-* **Git & CI/CD** — Version control and automated deployment
+* **Git & CI/CD** — Version control and automated deployment pipelines
 
 ---
 
