@@ -85,7 +85,8 @@ plt.yticks(rotation=0)
 plt.tight_layout()
 
 # ---- Step 9: Save Heatmap as PNG ----
-output_path = os.path.join(os.getcwd(), "lead_status_transition_heatmap.png")
+output_path = os.path.join(os.getcwd(), os.pardir, "images", "lead_status_transition_heatmap.png")
+output_path = os.path.abspath(output_path)
 plt.savefig(output_path, dpi=300, bbox_inches='tight')
 
 # ---- tep 10: Print Save Confirmation ----
